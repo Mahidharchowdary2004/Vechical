@@ -16,17 +16,29 @@ app.use("/api/bookings/", bookingsRoute);
 
 // Serve static files from the React app
 if (process.env.NODE_ENV === "production") {
-    // Set static folder
-    app.use(express.static(path.join(__dirname, "../frontend/build")));
-
-    app.get("*", (req, res) => {
-        try {
-            res.sendFile(path.resolve(__dirname, "../frontend/build", "index.html"));
-        } catch (error) {
-            console.error("Error serving frontend:", error);
-            res.status(500).send("Error serving frontend application");
-        }
-    });
+    const frontendBuildPath = path.join(__dirname, "../frontend/build");
+    console.log('Frontend build path:', frontendBuildPath);
+    
+    // Check if the build directory exists
+    if (require('fs').existsSync(frontendBuildPath)) {
+        app.use(express.static(frontendBuildPath));
+        
+        app.get("*", (req, res) => {
+            try {
+                const indexPath = path.join(frontendBuildPath, "index.html");
+                console.log('Serving index.html from:', indexPath);
+                res.sendFile(indexPath);
+            } catch (error) {
+                console.error("Error serving frontend:", error);
+                res.status(500).send("Error serving frontend application");
+            }
+        });
+    } else {
+        console.error('Frontend build directory not found at:', frontendBuildPath);
+        app.get("*", (req, res) => {
+            res.status(500).send("Frontend build files not found. Please ensure the frontend is built correctly.");
+        });
+    }
 } else {
     app.get("/", (req, res) => {
         res.send("API is running..");
@@ -39,4 +51,7 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something broke!');
 });
 
-app.listen(port, () => console.log(`Node JS Server Started in Port ${port}`));
+app.listen(port, () => {
+    console.log(`Node JS Server Started in Port ${port}`);
+    console.log('Environment:', process.env.NODE_ENV);
+});
