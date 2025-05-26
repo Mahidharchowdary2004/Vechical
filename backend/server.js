@@ -1,4 +1,5 @@
 const express = require("express");
+require('dotenv').config();
 const app = express();
 const Car = require('./models/carModel');
 const port = process.env.PORT || 5000;

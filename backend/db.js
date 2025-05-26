@@ -1,7 +1,13 @@
 const mongoose = require("mongoose");
+require('dotenv').config();
 
 function connectDB() {
-    const mongoURI = process.env.MONGO_URI || 'mongodb+srv://nallapanenimahidhar2004:LpmwoYdr4euwYEyX@cluster0.oclfqi3.mongodb.net/?retryWrites=true&w=majority';
+    const mongoURI = process.env.MONGO_URI;
+    
+    if (!mongoURI) {
+        console.error('MongoDB URI is not defined in environment variables');
+        process.exit(1);
+    }
     
     console.log('Attempting to connect to MongoDB...');
     
