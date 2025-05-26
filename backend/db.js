@@ -8,7 +8,7 @@ function connectDB() {
         console.error('MongoDB URI is not defined in environment variables');
         process.exit(1);
     }
-    
+    mongoose.set('strictQuery', false);
     console.log('Attempting to connect to MongoDB...');
     
     mongoose.connect(mongoURI, {
